@@ -3,6 +3,7 @@ package abn
 import (
 	"encoding/json"
 	"errors"
+	"net/http"
 	"strconv"
 	"strings"
 
@@ -30,16 +31,18 @@ func (a *Abn) validateGuid() error {
 	return nil
 }
 
-// AbnSearch for searching with abn code, the results are the ABN Details and the error
-func (a *Abn) AbnSearch(abn string) (*AbnModel, error) {
+// AbnSearch for searching with abn code, the results are the ABN Details, status code and the error
+func (a *Abn) AbnSearch(abn string) (*AbnModel, int, error) {
 	err := a.validateGuid()
 
+	statusCode := http.StatusInternalServerError
+
 	if err != nil {
-		return nil, err
+		return nil, statusCode, err
 	}
 
 	if abn == "" {
-		return nil, errors.New("abn required")
+		return nil, statusCode, errors.New("abn required")
 	}
 
 	client := resty.New()
@@ -52,8 +55,12 @@ func (a *Abn) AbnSearch(abn string) (*AbnModel, error) {
 		}).
 		Get(abnPath)
 
+	if resp != nil {
+		statusCode = resp.StatusCode()
+	}
+
 	if err != nil {
-		return nil, err
+		return nil, statusCode, err
 	}
 
 	body := string(resp.Body())
@@ -65,19 +72,23 @@ func (a *Abn) AbnSearch(abn string) (*AbnModel, error) {
 
 	json.Unmarshal([]byte(body), &m)
 
-	return a.abnModelFromMap(m)
+	result, err := a.abnModelFromMap(m)
+
+	return result, statusCode, err
 }
 
-// AcnSearch for searching with acn code, the results are the ABN Details and the error
-func (a *Abn) AcnSearch(acn string) (*AbnModel, error) {
+// AcnSearch for searching with acn code, the results are the ABN Details, status code and the error
+func (a *Abn) AcnSearch(acn string) (*AbnModel, int, error) {
 	err := a.validateGuid()
 
+	statusCode := http.StatusInternalServerError
+
 	if err != nil {
-		return nil, err
+		return nil, statusCode, err
 	}
 
 	if acn == "" {
-		return nil, errors.New("acn required")
+		return nil, statusCode, errors.New("acn required")
 	}
 
 	client := resty.New()
@@ -90,8 +101,12 @@ func (a *Abn) AcnSearch(acn string) (*AbnModel, error) {
 		}).
 		Get(acnPath)
 
+	if resp != nil {
+		statusCode = resp.StatusCode()
+	}
+
 	if err != nil {
-		return nil, err
+		return nil, statusCode, err
 	}
 
 	body := string(resp.Body())
@@ -103,19 +118,23 @@ func (a *Abn) AcnSearch(acn string) (*AbnModel, error) {
 
 	json.Unmarshal([]byte(body), &m)
 
-	return a.abnModelFromMap(m)
+	result, err := a.abnModelFromMap(m)
+
+	return result, statusCode, err
 }
 
-// NameSearch for searching with name, the results are the list of ABN Details and the error
-func (a *Abn) NameSearch(name string, maxResults int) ([]AbnSearchModel, error) {
+// NameSearch for searching with name, the results are the list of ABN Details, status code and the error
+func (a *Abn) NameSearch(name string, maxResults int) ([]AbnSearchModel, int, error) {
 	err := a.validateGuid()
 
+	statusCode := http.StatusInternalServerError
+
 	if err != nil {
-		return nil, err
+		return nil, statusCode, err
 	}
 
 	if name == "" {
-		return nil, errors.New("name required")
+		return nil, statusCode, errors.New("name required")
 	}
 
 	client := resty.New()
@@ -129,8 +148,12 @@ func (a *Abn) NameSearch(name string, maxResults int) ([]AbnSearchModel, error) 
 		}).
 		Get(namePath)
 
+	if resp != nil {
+		statusCode = resp.StatusCode()
+	}
+
 	if err != nil {
-		return nil, err
+		return nil, statusCode, err
 	}
 
 	body := string(resp.Body())
@@ -142,7 +165,9 @@ func (a *Abn) NameSearch(name string, maxResults int) ([]AbnSearchModel, error) 
 
 	json.Unmarshal([]byte(body), &m)
 
-	return a.abnSearchModelFromMap(m)
+	result, err := a.abnSearchModelFromMap(m)
+
+	return result, statusCode, err
 }
 
 func (a *Abn) abnModelFromMap(abnMap map[string]interface{}) (*AbnModel, error) {
