@@ -13,6 +13,7 @@ type Abn struct {
 	guid string
 }
 
+// NewAbn for create new ABN instance with GUID
 func NewAbn(guid string) *Abn {
 	a := new(Abn)
 
@@ -29,6 +30,7 @@ func (a *Abn) validateGuid() error {
 	return nil
 }
 
+// AbnSearch for searching with abn code, the results are the ABN Details and the error
 func (a *Abn) AbnSearch(abn string) (*AbnModel, error) {
 	err := a.validateGuid()
 
@@ -66,6 +68,7 @@ func (a *Abn) AbnSearch(abn string) (*AbnModel, error) {
 	return a.abnModelFromMap(m)
 }
 
+// AcnSearch for searching with acn code, the results are the ABN Details and the error
 func (a *Abn) AcnSearch(acn string) (*AbnModel, error) {
 	err := a.validateGuid()
 
@@ -103,6 +106,7 @@ func (a *Abn) AcnSearch(acn string) (*AbnModel, error) {
 	return a.abnModelFromMap(m)
 }
 
+// NameSearch for searching with name, the results are the list of ABN Details and the error
 func (a *Abn) NameSearch(name string, maxResults int) ([]AbnSearchModel, error) {
 	err := a.validateGuid()
 
