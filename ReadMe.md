@@ -7,6 +7,7 @@ ABN Lookup for Go. For complete documentation please visit [ABN Lookup](https://
 1. ABN Search
 2. ACN Search
 3. Name Search
+4. ABN Validation
 
 ## How to
 
@@ -52,5 +53,10 @@ ABN Lookup for Go. For complete documentation please visit [ABN Lookup](https://
     fmt.Println("[err]", err)
     fmt.Println("[code]", code)
     fmt.Println("[res]", resNames)
+
+    // ABN Validation
+    err = abn.AbnValidation("ABN_CODE")
+    fmt.Println("===== ABN Validation =====")
+    fmt.Println("[err]", err)
 
     ```
