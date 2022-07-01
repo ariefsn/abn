@@ -15,6 +15,7 @@ import (
 type Abn struct {
 	guid    string
 	message *messages
+	client  *resty.Client
 }
 
 // NewAbn for create new ABN instance with GUID
@@ -23,6 +24,11 @@ func NewAbn(guid string) *Abn {
 
 	a.guid = guid
 	a.message = NewMessages()
+
+	client := resty.New()
+	client.SetBaseURL(baseUrl)
+
+	a.client = client
 
 	return a
 }
@@ -49,10 +55,7 @@ func (a *Abn) AbnSearch(abn string) (*AbnModel, int, error) {
 		return nil, statusCode, errors.New(a.message.AbnRequired)
 	}
 
-	client := resty.New()
-	client.SetBaseURL(baseUrl)
-
-	resp, err := client.R().
+	resp, err := a.client.R().
 		SetQueryParams(map[string]string{
 			"guid": a.guid,
 			"abn":  abn,
@@ -95,10 +98,7 @@ func (a *Abn) AcnSearch(acn string) (*AbnModel, int, error) {
 		return nil, statusCode, errors.New(a.message.AcnRequired)
 	}
 
-	client := resty.New()
-	client.SetBaseURL(baseUrl)
-
-	resp, err := client.R().
+	resp, err := a.client.R().
 		SetQueryParams(map[string]string{
 			"guid": a.guid,
 			"acn":  acn,
@@ -141,10 +141,7 @@ func (a *Abn) NameSearch(name string, maxResults int) ([]AbnSearchModel, int, er
 		return nil, statusCode, errors.New(a.message.NameRequired)
 	}
 
-	client := resty.New()
-	client.SetBaseURL(baseUrl)
-
-	resp, err := client.R().
+	resp, err := a.client.R().
 		SetQueryParams(map[string]string{
 			"guid":       a.guid,
 			"name":       name,
