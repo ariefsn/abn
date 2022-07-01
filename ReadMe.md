@@ -7,7 +7,7 @@ ABN Lookup for Go. For complete documentation please visit [ABN Lookup](https://
 1. ABN Search
 2. ACN Search
 3. Name Search
-4. ABN Validation
+4. ABN Validation (ref: [ABN Format](https://abr.business.gov.au/Help/AbnFormat))
 
 ## How to
 
