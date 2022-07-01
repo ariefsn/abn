@@ -3,7 +3,9 @@ package abn
 import (
 	"encoding/json"
 	"errors"
+	"math"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -11,7 +13,8 @@ import (
 )
 
 type Abn struct {
-	guid string
+	guid    string
+	message *messages
 }
 
 // NewAbn for create new ABN instance with GUID
@@ -19,13 +22,14 @@ func NewAbn(guid string) *Abn {
 	a := new(Abn)
 
 	a.guid = guid
+	a.message = NewMessages()
 
 	return a
 }
 
 func (a *Abn) validateGuid() error {
 	if a.guid == "" {
-		return errors.New("guid is required")
+		return errors.New(a.message.GuidRequired)
 	}
 
 	return nil
@@ -42,7 +46,7 @@ func (a *Abn) AbnSearch(abn string) (*AbnModel, int, error) {
 	}
 
 	if abn == "" {
-		return nil, statusCode, errors.New("abn required")
+		return nil, statusCode, errors.New(a.message.AbnRequired)
 	}
 
 	client := resty.New()
@@ -88,7 +92,7 @@ func (a *Abn) AcnSearch(acn string) (*AbnModel, int, error) {
 	}
 
 	if acn == "" {
-		return nil, statusCode, errors.New("acn required")
+		return nil, statusCode, errors.New(a.message.AcnRequired)
 	}
 
 	client := resty.New()
@@ -134,7 +138,7 @@ func (a *Abn) NameSearch(name string, maxResults int) ([]AbnSearchModel, int, er
 	}
 
 	if name == "" {
-		return nil, statusCode, errors.New("name required")
+		return nil, statusCode, errors.New(a.message.NameRequired)
 	}
 
 	client := resty.New()
@@ -231,4 +235,42 @@ func (a *Abn) abnSearchModelFromMap(abnMap map[string]interface{}) ([]AbnSearchM
 	}
 
 	return abns, nil
+}
+
+func (a *Abn) AbnValidation(abn string) error {
+	// check 11 digits
+	if len(abn) != 11 {
+		return errors.New(a.message.AbnInvalidLength)
+	}
+
+	// check is number
+	regex := regexp.MustCompile(`^[0-9]+$`)
+	match := regex.MatchString(abn)
+	if !match {
+		return errors.New(a.message.AbnInvalidType)
+	}
+
+	// weighting factor
+	weights := []int{10, 1, 3, 5, 7, 9, 11, 12, 15, 17, 19}
+
+	// sum = digit*weight
+	sum := 0
+	for i, w := range weights {
+		n, _ := strconv.Atoi(string(abn[i]))
+
+		// substract 1 from first digit
+		if i == 0 {
+			n -= 1
+		}
+
+		sum += (w * n)
+	}
+
+	// divide sum by 89, if remainder is zero then its valid
+	remainder := math.Remainder(float64(sum), 89)
+	if remainder > 0 {
+		return errors.New(a.message.AbnInvalid)
+	}
+
+	return nil
 }
