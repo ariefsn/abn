@@ -234,6 +234,7 @@ func (a *Abn) abnSearchModelFromMap(abnMap map[string]interface{}) ([]AbnSearchM
 	return abns, nil
 }
 
+// AbnValidation for validate abn format. Ref: https://abr.business.gov.au/Help/AbnFormat
 func (a *Abn) AbnValidation(abn string) error {
 	// check 11 digits
 	if len(abn) != 11 {
