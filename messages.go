@@ -1,6 +1,6 @@
 package abn
 
-type messages struct {
+type Messages struct {
 	GuidRequired     string
 	AbnRequired      string
 	AcnRequired      string
@@ -10,8 +10,8 @@ type messages struct {
 	AbnInvalid       string
 }
 
-func NewMessages() *messages {
-	m := messages{
+func NewMessages() *Messages {
+	m := Messages{
 		GuidRequired:     "guid is required",
 		AbnRequired:      "abn is required",
 		AcnRequired:      "acn is required",

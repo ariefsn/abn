@@ -10,20 +10,29 @@ import (
 	"strings"
 
 	"github.com/go-resty/resty/v2"
+	"github.com/jinzhu/copier"
 )
 
 type Abn struct {
 	guid    string
-	message *messages
+	message *Messages
 	client  *resty.Client
 }
 
 // NewAbn for create new ABN instance with GUID
-func NewAbn(guid string) *Abn {
+func NewAbn(guid string, args ...interface{}) *Abn {
 	a := new(Abn)
 
 	a.guid = guid
 	a.message = NewMessages()
+
+	// check args
+	if len(args) > 0 {
+		copier.CopyWithOption(a.message, args[0], copier.Option{
+			IgnoreEmpty: true,
+			DeepCopy:    true,
+		})
+	}
 
 	client := resty.New()
 	client.SetBaseURL(baseUrl)
