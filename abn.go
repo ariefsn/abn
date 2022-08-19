@@ -50,6 +50,14 @@ func (a *Abn) validateGuid() error {
 	return nil
 }
 
+// SetMessage for overriding the error message
+func (a *Abn) SetMessage(msg Messages) {
+	copier.CopyWithOption(a.message, msg, copier.Option{
+		IgnoreEmpty: true,
+		DeepCopy:    true,
+	})
+}
+
 // AbnSearch for searching with abn code, the results are the ABN Details, status code and the error
 func (a *Abn) AbnSearch(abn string) (*AbnModel, int, error) {
 	err := a.validateGuid()

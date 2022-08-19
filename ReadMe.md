@@ -21,14 +21,19 @@ ABN Lookup for Go. For complete documentation please visit [ABN Lookup](https://
 
     ```go
     import (
-      "github.com/ariefsn/abn"
+      a "github.com/ariefsn/abn"
     )
     ```
 
 3. Use it
 
     ```go
-    abn := abn.NewAbn("YOUR_GUID")
+    // Default
+    abn := a.NewAbn("YOUR_GUID")
+    // Override Message On Init
+    abn = a.NewAbn("YOUR_GUID", a.Messages{})
+    // Or After Initiate
+    abn.SetMessage(a.Message{})
 
     // ABN Search
     res, code, err := abn.AbnSearch("ABN_CODE")
