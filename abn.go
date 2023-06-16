@@ -266,7 +266,7 @@ func (a *Abn) AbnValidation(abn string) error {
 	}
 
 	// weighting factor
-	weights := []int{10, 1, 3, 5, 7, 9, 11, 12, 15, 17, 19}
+	weights := []int{10, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19}
 
 	// sum = digit*weight
 	sum := 0
@@ -283,7 +283,7 @@ func (a *Abn) AbnValidation(abn string) error {
 
 	// divide sum by 89, if remainder is zero then its valid
 	remainder := math.Remainder(float64(sum), 89)
-	if remainder > 0 {
+	if remainder != 0 {
 		return errors.New(a.message.AbnInvalid)
 	}
 
